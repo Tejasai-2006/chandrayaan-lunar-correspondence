@@ -1,0 +1,94 @@
+{
+  "Raw Intensity (Baseline)": {
+    "Azimuth Inversion (180 deg)": {
+      "jaccard_k5": 0.09698412698412696,
+      "jaccard_k10": 0.13233636504534335,
+      "jaccard_k20": 0.19245597688035734,
+      "spearman_rho": 0.36168206853713053,
+      "trustworthiness": 0.7526207605344296
+    },
+    "Grazing Sun Elevation (15 deg)": {
+      "jaccard_k5": 0.22626984126984126,
+      "jaccard_k10": 0.30388381713459106,
+      "jaccard_k20": 0.37884873328582924,
+      "spearman_rho": 0.757969871860507,
+      "trustworthiness": 0.9119355943816375
+    },
+    "Joint Illumination & Scale (s=1.5)": {
+      "jaccard_k5": 0.03407407407407407,
+      "jaccard_k10": 0.06499656002751977,
+      "jaccard_k20": 0.11811084559709623,
+      "spearman_rho": 0.11120863333388094,
+      "trustworthiness": 0.5923055841041452
+    }
+  },
+  "Classical Gradient Histogram": {
+    "Azimuth Inversion (180 deg)": {
+      "jaccard_k5": 0.0635978835978836,
+      "jaccard_k10": 0.08933829672219766,
+      "jaccard_k20": 0.12696363382168385,
+      "spearman_rho": 0.1159468096213029,
+      "trustworthiness": 0.6219938335046249
+    },
+    "Grazing Sun Elevation (15 deg)": {
+      "jaccard_k5": 0.1478835978835979,
+      "jaccard_k10": 0.21800540819116668,
+      "jaccard_k20": 0.2781590815405591,
+      "spearman_rho": 0.6342049931559658,
+      "trustworthiness": 0.8328194587187393
+    },
+    "Joint Illumination & Scale (s=1.5)": {
+      "jaccard_k5": 0.05063492063492063,
+      "jaccard_k10": 0.0662469900240798,
+      "jaccard_k20": 0.09930003934647896,
+      "spearman_rho": 0.06869179239662394,
+      "trustworthiness": 0.6204453579993148
+    }
+  },
+  "Lunar-InvNet (Contrastive Invariant)": {
+    "Azimuth Inversion (180 deg)": {
+      "jaccard_k5": 0.032407407407407406,
+      "jaccard_k10": 0.058915835339983944,
+      "jaccard_k20": 0.10055708975363424,
+      "spearman_rho": 0.07799635546007619,
+      "trustworthiness": 0.5785954093867762
+    },
+    "Grazing Sun Elevation (15 deg)": {
+      "jaccard_k5": 0.09121693121693121,
+      "jaccard_k10": 0.10792168329320032,
+      "jaccard_k20": 0.16033778854924582,
+      "spearman_rho": 0.30944990296234054,
+      "trustworthiness": 0.7163206577595067
+    },
+    "Joint Illumination & Scale (s=1.5)": {
+      "jaccard_k5": 0.024444444444444446,
+      "jaccard_k10": 0.04205481022818484,
+      "jaccard_k20": 0.08531311336264896,
+      "spearman_rho": 0.061173792416007074,
+      "trustworthiness": 0.5425967797190818
+    }
+  },
+  "Lunar-AE (Latent Bottleneck)": {
+    "Azimuth Inversion (180 deg)": {
+      "jaccard_k5": 0.044047619047619044,
+      "jaccard_k10": 0.06929021901158122,
+      "jaccard_k20": 0.12385282507570085,
+      "spearman_rho": 0.20375183641373618,
+      "trustworthiness": 0.6137444330250086
+    },
+    "Grazing Sun Elevation (15 deg)": {
+      "jaccard_k5": 0.13333333333333333,
+      "jaccard_k10": 0.1848500839832109,
+      "jaccard_k20": 0.2634984032389658,
+      "spearman_rho": 0.5658419165600607,
+      "trustworthiness": 0.8079547790339158
+    },
+    "Joint Illumination & Scale (s=1.5)": {
+      "jaccard_k5": 0.01814814814814815,
+      "jaccard_k10": 0.042213048962274964,
+      "jaccard_k20": 0.08683384811867785,
+      "spearman_rho": 0.06659006894660384,
+      "trustworthiness": 0.5382528263103803
+    }
+  }
+}

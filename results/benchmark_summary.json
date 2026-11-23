@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-11-19 11:12:42",
+  "total_runtime_seconds": 97.24,
+  "representations_evaluated": [
+    "Raw Intensity (Baseline)",
+    "Classical Gradient Histogram",
+    "Lunar-InvNet (Contrastive Invariant)",
+    "Lunar-AE (Latent Bottleneck)"
+  ],
+  "illumination_stability_mma3px_mean": {
+    "Raw Intensity (Baseline)": 12.695066358781617,
+    "Classical Gradient Histogram": 9.434104138654439,
+    "Lunar-InvNet (Contrastive Invariant)": 8.690520416482327,
+    "Lunar-AE (Latent Bottleneck)": 8.497029018342166
+  },
+  "scale_stability_mma3px_mean": {
+    "Raw Intensity (Baseline)": 2.832244008714597,
+    "Classical Gradient Histogram": 1.4520202020202018,
+    "Lunar-InvNet (Contrastive Invariant)": 1.8376068376068375,
+    "Lunar-AE (Latent Bottleneck)": 0.5376344086021505
+  },
+  "extreme_azimuth_180deg_mma3px": {
+    "Raw Intensity (Baseline)": 0.0,
+    "Classical Gradient Histogram": 1.7857142857142856,
+    "Lunar-InvNet (Contrastive Invariant)": 0.0,
+    "Lunar-AE (Latent Bottleneck)": 0.0
+  },
+  "neighbourhood_preservation_spearman_rho_mean": {
+    "Raw Intensity (Baseline)": 0.4102868579105061,
+    "Classical Gradient Histogram": 0.2729478650579642,
+    "Lunar-InvNet (Contrastive Invariant)": 0.14954001694614127,
+    "Lunar-AE (Latent Bottleneck)": 0.27872794064013356
+  },
+  "reconstruction_psnr_mean": 9.258911609649658,
+  "reconstruction_ssim_mean": 0.6604656117362804
+}
