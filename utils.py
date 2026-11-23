@@ -11,7 +11,20 @@ Helper utilities for:
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-from skimage.metrics import structural_similarity as ssim
+try:
+    from skimage.metrics import structural_similarity as ssim
+except ImportError:
+    def ssim(img1, img2, data_range=1.0):
+        c1 = (0.01 * data_range) ** 2
+        c2 = (0.03 * data_range) ** 2
+        mu1 = float(np.mean(img1))
+        mu2 = float(np.mean(img2))
+        sigma1_sq = float(np.var(img1))
+        sigma2_sq = float(np.var(img2))
+        sigma12 = float(np.mean((img1 - mu1) * (img2 - mu2)))
+        num = (2 * mu1 * mu2 + c1) * (2 * sigma12 + c2)
+        den = (mu1**2 + mu2**2 + c1) * (sigma1_sq + sigma2_sq + c2)
+        return float(num / (den + 1e-8))
 
 def detect_lunar_keypoints(image, max_keypoints=120, quality_level=0.012, min_distance=12):
     """

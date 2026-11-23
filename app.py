@@ -821,7 +821,7 @@ def main():
     with tab5:
         st.subheader("📖 Beginner's Guide: Lunar Remote Sensing & Mission Physics")
         
-        st.markdown("""
+        st.markdown(r"""
         ### 🌕 Why is matching images on the Moon so hard?
         On Earth, sunlight is scattered in all directions by the atmosphere (diffuse skylight), meaning shadows are soft and slightly illuminated. 
         On the Moon:
