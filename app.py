@@ -199,7 +199,7 @@ def load_models_and_representations():
         'Classical Gradient Histogram (SIFT-style)': ClassicalGradientRepresentation(patch_size=48),
         'Lunar-AE (Autoencoder Bottleneck)': LunarAutoencoderRepresentation(encoder, patch_size=48)
     }
-    return reps, autoencoder
+    return reps, autoencoder, encoder
 
 @st.cache_data
 def get_terrain_engine(scenario_name):
@@ -234,7 +234,7 @@ def init_session_state():
 # ----------------- MAIN APP -----------------
 def main():
     init_session_state()
-    reps, autoencoder = load_models_and_representations()
+    reps, autoencoder, encoder = load_models_and_representations()
 
     # Title & Subtitle
     st.markdown('<div class="main-title">🌖 Chandrayaan Lunar Image Correspondence Explorer</div>', unsafe_allow_html=True)
