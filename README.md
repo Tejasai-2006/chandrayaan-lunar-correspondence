@@ -66,7 +66,8 @@ $$\text{MMA}@\tau = \frac{1}{|\mathcal{M}|} \sum_{(i, j) \in \mathcal{M}} \mathb
 
 ```
 Unsupervised Learning Project/
-├── lunar_engine.py             # Topographic DEM generator & Lommel-Seeliger photometric renderer
+├── data/isro_chandrayaan/      # 100% Real-World ISRO Chandrayaan-2 TMC-2 & OHRC orbital passes
+├── lunar_engine.py             # ISRO Chandrayaan dataset loader & photometric relief engine
 ├── representations.py          # Raw intensity baseline, Classical gradient, Lunar-InvNet, Lunar-AE
 ├── evaluation.py               # Metric suite: Neighbourhood preservation, MMA@tau, reconstruction
 ├── train_and_experiment.py     # Training pipeline, multi-parameter sweeps, benchmark artifacts
@@ -86,10 +87,10 @@ Unsupervised Learning Project/
 python train_and_experiment.py
 ```
 This script will:
-1. Generate synthetic lunar crater scenes and self-supervised contrastive training pairs.
+1. Load 100% real ISRO Chandrayaan-2 lunar terrain scenes (TMC-2 and OHRC) and extract self-supervised contrastive training pairs.
 2. Train Lunar-InvNet and Lunar-AE (or load existing checkpoints).
 3. Execute parameter sweeps across solar azimuth ($0^\circ$ to $180^\circ$), solar elevation, and scale ($1.0\times$ to $3.0\times$).
-4. Compute neighbourhood preservation, reconstruction metrics, and matching stability.
+4. Compute neighbourhood preservation, reconstruction metrics, and matching stability on authentic spacecraft observations.
 5. Save artifacts to `results/` and print the summary scorecard.
 
 ### 5.2 Launch the Correspondence Explorer

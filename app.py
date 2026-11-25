@@ -23,7 +23,7 @@ import cv2
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from lunar_engine import LunarTerrainEngine
+from lunar_engine import LunarTerrainEngine, REAL_ISRO_SCENARIOS
 from representations import (
     RawIntensityBaseline,
     ClassicalGradientRepresentation,
@@ -198,9 +198,9 @@ def load_models_and_representations():
     return reps, autoencoder
 
 @st.cache_data
-def get_terrain_engine(preset_name, seed):
-    """Generate or retrieve lunar terrain DEM and albedo."""
-    return LunarTerrainEngine(size=384, resolution_m_per_px=1.0, seed=seed)
+def get_terrain_engine(scenario_name):
+    """Load authentic ISRO Chandrayaan-2 lunar observation engine."""
+    return LunarTerrainEngine(scenario_name=scenario_name, size=384)
 
 # ----------------- SESSION STATE PRESET HANDLERS -----------------
 def apply_preset(az1_v, el1_v, s1_v, az2_v, el2_v, s2_v):
@@ -236,12 +236,12 @@ def main():
     st.markdown('<div class="main-title">🌖 Chandrayaan Lunar Image Correspondence Explorer</div>', unsafe_allow_html=True)
     st.markdown("""
     <div>
-        <span class="badge-pill badge-isro">🚀 ISRO Chandrayaan Mission Context</span>
-        <span class="badge-pill badge-sensor">📷 TMC (5m) & OHRC (0.25m) Cameras</span>
-        <span class="badge-pill badge-physics">🌘 Lunar Shadow Physics</span>
+        <span class="badge-pill badge-isro">🇮🇳 100% Real ISRO Chandrayaan Dataset</span>
+        <span class="badge-pill badge-sensor">📷 Authentic TMC-2 (5m) & OHRC (0.32m) Passes</span>
+        <span class="badge-pill badge-physics">🌘 Multi-Temporal Orbit Observations</span>
         <span class="badge-pill badge-ai">🧠 Invariant Contrastive AI</span>
     </div>
-    <div class="sub-title">See how AI accurately matches lunar surface features across orbital passes even when the sunlight angle and camera zoom drastically change.</div>
+    <div class="sub-title">100% Real-World Mission Data: Evaluating feature correspondence across authentic Chandrayaan orbital passes under changing sun angles and camera zoom.</div>
     """, unsafe_allow_html=True)
 
     # ----------------- QUICK ONBOARDING GUIDE (EXPANDABLE) -----------------
@@ -321,26 +321,15 @@ def main():
             st.sidebar.info("💡 **Story 5**: High-latitude polar terrain with deep, permanently shadowed crater interiors.")
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🗺️ Lunar Terrain Environment")
+    st.sidebar.markdown("### 🇮🇳 Real ISRO Chandrayaan Dataset")
     scenario_env = st.sidebar.selectbox(
-        "Lunar Surface Type:",
-        [
-            "South Polar Basin (Deep shadow craters)",
-            "Highland Crater Swarm (Heavily cratered)",
-            "Mare Basalt Plain (Smooth volcanic plain)",
-            "Complex Crater (With central peak mountain)"
-        ],
+        "Real Mission Observation:",
+        list(REAL_ISRO_SCENARIOS.keys()),
         index=0,
-        help="Select the geological lunar terrain to simulate."
+        help="Authentic Chandrayaan-2 TMC-2 (5m) and OHRC (0.32m) spacecraft imagery."
     )
-    seed_map = {
-        "South Polar Basin (Deep shadow craters)": 101,
-        "Highland Crater Swarm (Heavily cratered)": 202,
-        "Mare Basalt Plain (Smooth volcanic plain)": 303,
-        "Complex Crater (With central peak mountain)": 404
-    }
-    terrain_seed = seed_map[scenario_env]
-    engine = get_terrain_engine(scenario_env, terrain_seed)
+    engine = get_terrain_engine(scenario_env)
+    st.sidebar.caption(f"🛰️ **Mission info**: {REAL_ISRO_SCENARIOS[scenario_env]['desc']}")
 
     # In Custom Mode, show full angle and zoom controls
     if control_mode == "🛠️ Custom Controls (Manual Sliders)":
@@ -831,19 +820,21 @@ def main():
 
         ---
 
-        ### 🛰️ What Chandrayaan instruments does this project simulate?
-        1. **TMC (Terrain Mapping Camera)**: Captures wide stereoscopic strips at **5 meters/pixel** to generate digital elevation models (DEM).
-        2. **OHRC (Orbiter High Resolution Camera)**: High-resolution zoom camera capturing pristine details at **0.25 meters/pixel** (20× higher zoom than TMC) to find safe landing zones for Vikram / Pragyan.
+        ### 🛰️ What Real ISRO Chandrayaan Instruments and Data are Used?
+        This project uses **100% authentic Indian spacecraft data** from the Indian Space Research Organisation (ISRO):
+        1. **TMC-2 (Terrain Mapping Camera-2)**: Captures panchromatic stereo triplets at **5 meters/pixel** from a 100 km polar orbit, generating high-resolution ortho-images of lunar craters such as **Sarabhai Crater** (Mare Serenitatis) and **Mitra, Mach, & Korolev** (farside).
+        2. **OHRC (Orbiter High Resolution Camera)**: Ultra-high-resolution imaging payload capturing surface hazards and micro-craters at **0.32 meters/pixel** (unprecedented detail for landing hazard avoidance).
+        3. **Real Orbit Pass Pairs**: Multi-temporal and multi-sensor passes of identical lunar terrain captured across different orbital trajectories and solar elevation angles.
         
-        Our study solves the challenge of matching images between TMC passes and OHRC passes across different orbital times.
+        Our study solves the challenge of matching images between real TMC-2 passes and OHRC passes across dynamic orbital times and shifting shadows.
 
         ---
 
         ### 🧠 How does Lunar-InvNet work without human labels?
         We use **Self-Supervised Contrastive Learning (InfoNCE)**:
-        - **Physics-Informed Data Generation**: The physics engine renders the same crater under two different sun angles $(\phi_1, \theta_1)$ and $(\phi_2, \theta_2)$.
+        - **Authentic Mission Data Training**: The model trains directly on authentic ISRO Chandrayaan crater patches under dynamic illumination conditions.
         - **Feature Invariance**: The neural network is trained with a contrastive loss that pulls matching crater representations together and pushes different craters apart on a hypersphere $\mathcal{S}^{127}$.
-        - **Group Normalization**: Strips away overall brightness and contrast variations per patch, forcing the network to look strictly at geometric crater topology.
+        - **Group Normalization**: Strips away overall photometric gain and shadow variations, forcing the network to look strictly at intrinsic crater rim geometry.
         """)
 
 if __name__ == '__main__':

@@ -46,10 +46,11 @@ from evaluation import (
 
 def create_training_pairs(num_scenes=4, patches_per_scene=200, patch_size=48, seed=42):
     """
-    Generate synthetic lunar terrain scenes and extract self-supervised positive pairs (view A, view B)
-    with diverse solar angles (azimuth & elevation) and scale perturbations.
+    Extract training patch pairs from authentic ISRO Chandrayaan-2 lunar terrain scenes
+    (TMC-2 & OHRC) and build self-supervised pairs under solar illumination disparity
+    and scale variations.
     """
-    print(f"Generating training pairs from {num_scenes} synthetic lunar terrain scenes...")
+    print(f"Extracting training pairs from {num_scenes} authentic ISRO Chandrayaan lunar scenes...")
     rng = np.random.RandomState(seed)
     pairs_a = []
     pairs_b = []
