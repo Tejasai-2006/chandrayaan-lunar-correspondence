@@ -22,6 +22,10 @@ import pandas as pd
 import cv2
 import matplotlib.pyplot as plt
 import streamlit as st
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score, davies_bouldin_score
 
 from lunar_engine import LunarTerrainEngine, REAL_ISRO_SCENARIOS
 from representations import (
@@ -521,12 +525,13 @@ def main():
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ----------------- NAVIGATION TABS -----------------
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "🔭 1. Interactive Match Explorer",
         "⚔️ 2. Head-to-Head Arena (AI vs Baseline)",
         "🔍 3. Why Shadows Trick Computers",
         "📊 4. Full Scientific Research Benchmark",
-        "📖 5. Lunar Science & Mission FAQ"
+        "🧬 5. PCA vs. t-SNE Manifold Dashboard",
+        "📖 6. Lunar Science & Mission FAQ"
     ])
 
     # ----------------- TAB 1: MATCH EXPLORER -----------------
@@ -806,8 +811,113 @@ def main():
                     combo = np.hstack([sample_in[i], recon_live[i]])
                     st.image(combo, clamp=True, caption="Left: Optical | Right: Reconstructed DEM")
 
-    # ----------------- TAB 5: LUNAR SCIENCE & MISSION FAQ -----------------
+    # ----------------- TAB 5: PCA vs. t-SNE MANIFOLD DASHBOARD -----------------
     with tab5:
+        st.subheader("🧬 Dimensionality Reduction & Manifold Dashboard: PCA vs. t-SNE")
+        st.write(
+            "Direct implementation of the curriculum's **Unit IV (Dimensionality Reduction & Representation Learning)** "
+            "and **Unit VI Project Component**: comparing linear projection (**PCA**) vs. non-linear manifold learning (**t-SNE**) "
+            "on high-dimensional authentic ISRO Chandrayaan terrain patches."
+        )
+
+        col_cfg1, col_cfg2, col_cfg3 = st.columns([2, 1.5, 1.5])
+        with col_cfg1:
+            dim_feat_choice = st.selectbox(
+                "Select High-Dimensional Representation:",
+                ["Lunar-InvNet Invariant Embeddings (128-D)", "Raw Pixel Intensity Patches (2304-D)", "Lunar-AE Latent Bottleneck (64-D)"]
+            )
+        with col_cfg2:
+            num_clusters = st.slider("k-Means Clusters (k):", 2, 6, 3, help="Unsupervised partition-based clustering (Unit II).")
+        with col_cfg3:
+            default_perp = min(30, max(5, len(p1) // 3)) if len(p1) > 15 else max(2, len(p1) - 1)
+            tsne_perplexity = st.slider("t-SNE Perplexity:", 2, min(50, max(5, len(p1) - 1)), default_perp, help="Effective number of local neighbors (Unit IV).")
+
+        # Prepare feature matrix X
+        if "Lunar-InvNet" in dim_feat_choice:
+            X_feat = np.vstack([d1_inv, d2_inv])
+            feat_label = "Lunar-InvNet 128-D Hypersphere Embeddings"
+        elif "Raw Pixel" in dim_feat_choice:
+            X_feat = np.vstack([p1.reshape(len(p1), -1), p2.reshape(len(p2), -1)])
+            feat_label = "Raw 48x48 Lunar Patches (2304-D)"
+        else:
+            ae_enc_1 = encoder.predict(np.expand_dims(p1, -1), verbose=0)
+            ae_enc_2 = encoder.predict(np.expand_dims(p2, -1), verbose=0)
+            X_feat = np.vstack([ae_enc_1, ae_enc_2])
+            feat_label = "Lunar-AE Latent Bottleneck (64-D)"
+
+        # Unsupervised Clustering (Unit II)
+        kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init='auto')
+        cluster_labels = kmeans.fit_predict(X_feat)
+        
+        # Validation Metrics (Unit II & VI)
+        try:
+            sil_score = float(silhouette_score(X_feat, cluster_labels))
+            db_score = float(davies_bouldin_score(X_feat, cluster_labels))
+        except Exception:
+            sil_score, db_score = 0.0, 0.0
+
+        # Linear: PCA
+        pca = PCA(n_components=2, random_state=42)
+        X_pca = pca.fit_transform(X_feat)
+        var_exp = pca.explained_variance_ratio_
+
+        # Non-Linear: t-SNE
+        effective_perp = min(tsne_perplexity, max(2, (len(X_feat) - 1) // 3))
+        tsne = TSNE(n_components=2, perplexity=effective_perp, random_state=42, init='pca', learning_rate='auto')
+        X_tsne = tsne.fit_transform(X_feat)
+
+        # Telemetry row for Clustering & Reduction Metrics
+        c_m1, c_m2, c_m3, c_m4 = st.columns(4)
+        with c_m1:
+            st.metric("PCA Explained Variance (PC1+PC2)", f"{(var_exp[0] + var_exp[1])*100:.1f}%", f"PC1: {var_exp[0]*100:.1f}%, PC2: {var_exp[1]*100:.1f}%")
+        with c_m2:
+            st.metric("Silhouette Coefficient (Cohesion)", f"{sil_score:.3f}", "Higher is better [-1 to +1]")
+        with c_m3:
+            st.metric("Davies-Bouldin Index (Separation)", f"{db_score:.3f}", "Lower is better (Unit II)")
+        with c_m4:
+            st.metric("Total Manifold Patches", f"{len(X_feat)}", f"View A: {len(p1)} | View B: {len(p2)}")
+
+        # Visualization: Side-by-Side PCA vs t-SNE
+        fig_dim, (ax_pca, ax_tsne) = plt.subplots(1, 2, figsize=(14, 5.5), dpi=130)
+        palette = ['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
+
+        # Plot PCA
+        for k in range(num_clusters):
+            idx = cluster_labels == k
+            ax_pca.scatter(X_pca[idx, 0], X_pca[idx, 1], c=palette[k % len(palette)], label=f"Cluster {k+1}", alpha=0.75, edgecolors='k', linewidth=0.5, s=45)
+        ax_pca.set_title(f"Linear: PCA Projection (PC1 vs PC2)\nTotal Variance: {(var_exp[0]+var_exp[1])*100:.1f}%", fontsize=11, fontweight='bold')
+        ax_pca.set_xlabel(f"Principal Component 1 ({var_exp[0]*100:.1f}%)", fontsize=9)
+        ax_pca.set_ylabel(f"Principal Component 2 ({var_exp[1]*100:.1f}%)", fontsize=9)
+        ax_pca.grid(True, linestyle='--', alpha=0.5)
+        ax_pca.legend(loc='best', frameon=True, fontsize=8)
+
+        # Plot t-SNE
+        for k in range(num_clusters):
+            idx = cluster_labels == k
+            ax_tsne.scatter(X_tsne[idx, 0], X_tsne[idx, 1], c=palette[k % len(palette)], label=f"Cluster {k+1}", alpha=0.75, edgecolors='k', linewidth=0.5, s=45)
+        ax_tsne.set_title(f"Non-Linear: t-SNE Manifold (Perplexity={effective_perp})\nLocal Neighborhood Clustering", fontsize=11, fontweight='bold')
+        ax_tsne.set_xlabel("t-SNE Dimension 1", fontsize=9)
+        ax_tsne.set_ylabel("t-SNE Dimension 2", fontsize=9)
+        ax_tsne.grid(True, linestyle='--', alpha=0.5)
+        ax_tsne.legend(loc='best', frameon=True, fontsize=8)
+
+        plt.tight_layout()
+        st.pyplot(fig_dim)
+        plt.close()
+
+        # Scientific & Syllabus Context Expander
+        with st.expander("📚 Syllabus Connection: PCA vs. t-SNE Theoretical Comparison", expanded=False):
+            st.markdown(r"""
+            | Concept | PCA (Linear Reduction) | t-SNE (Non-Linear Manifold Learning) |
+            | :--- | :--- | :--- |
+            | **Mathematical Goal** | Maximizes global variance along orthogonal projection axes ($\mathbf{w}^T \mathbf{\Sigma} \mathbf{w}$). | Minimizes Kullback-Leibler (KL) divergence between high-D and low-D joint probabilities: $\text{KL}(P \parallel Q) = \sum p_{ij} \log \frac{p_{ij}}{q_{ij}}$. |
+            | **Preservation** | Preserves **global geometry** and large pairwise Euclidean distances. | Preserves **local neighborhoods** and manifold cluster boundaries. |
+            | **Lunar Behavior** | Sensitive to photometric brightness offsets; shadows stretch points across PC1. | Groups patches by physical crater morphology regardless of illumination. |
+            | **Validation Metric** | Cumulative Explained Variance Ratio ($\sum \lambda_i / \sum \lambda_{\text{all}}$). | Cluster compactness evaluated via **Silhouette Score** and **Trustworthiness**. |
+            """)
+
+    # ----------------- TAB 6: LUNAR SCIENCE & MISSION FAQ -----------------
+    with tab6:
         st.subheader("📖 Beginner's Guide: Lunar Remote Sensing & Mission Physics")
         
         st.markdown(r"""
